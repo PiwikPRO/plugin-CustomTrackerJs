@@ -1,0 +1,16 @@
+{
+    "name": "CustomTrackerJs",
+    "version": "0.1.0",
+    "description": "Customize the code of the Javascript Tracker",
+    "theme": false,
+    "require": {
+        "piwik": ">=2.8.0-b4"
+    },
+    "authors": [
+        {
+            "name": "Piwik",
+            "email": "",
+            "homepage": ""
+        }
+    ]
+}
