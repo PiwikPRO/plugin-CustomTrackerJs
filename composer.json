@@ -1,7 +1,7 @@
 {
   "name": "piwikpro/CustomTrackerJs",
   "type": "piwik-plugin",
-  "description": "Add custom code to the Piwik Javascript Tracker.",
+  "description": "Piwik plugin to let super users and plugins customize the piwik.js tracker file.",
   "homepage": "http://piwik.pro",
   "authors": [
     {
