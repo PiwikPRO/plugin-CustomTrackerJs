@@ -12,7 +12,7 @@ class Tasks extends \Piwik\Plugin\Tasks
 {
     public function schedule()
     {
-        $this->hourly('updateTracker');
+        $this->daily('updateTracker');
     }
 
     public function updateTracker()
