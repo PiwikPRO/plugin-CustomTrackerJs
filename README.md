@@ -18,7 +18,7 @@ as to write valid Javascript code since invalid code can break the tracker.
 Plugins can make use of the `CustomTrackerJs.getTrackerJsAdditions` event to register Javascript code to add to
 the tracker.
 
-For example this will add a `console.log('Hello world!');` line to the tracker:
+For example this will add a `console.log("Hello world!");` line to the tracker:
 
 ```php
 class MyPlugin extends \Piwik\Plugin
@@ -32,7 +32,7 @@ class MyPlugin extends \Piwik\Plugin
 
     public function getTrackerJsAdditions(&$code)
     {
-        $code .= PHP_EOL . 'console.log('Hello world!');';
+        $code .= PHP_EOL . 'console.log("Hello world!");';
     }
 }
 ```
