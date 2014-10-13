@@ -1,5 +1,7 @@
 # Piwik CustomTrackerJs Plugin
 
+[![Build Status](https://travis-ci.org/PiwikPRO/plugin-CustomTrackerJs.svg?branch=master)](https://travis-ci.org/PiwikPRO/plugin-CustomTrackerJs)
+
 ## Description
 
 The `CustomTrackerJs` plugin lets the super users or other plugins add custom code to the Piwik Javascript Tracker.
