@@ -29,13 +29,15 @@ class TrackerUpdater
 
     public function __invoke()
     {
-        $js = file_get_contents($this->file);
+        $originalJs = file_get_contents($this->file);
         $addition = $this->getCustomJsAdditions();
 
         $generator = new TrackerGenerator();
-        $js = $generator->generate($js, $addition);
+        $js = $generator->generate($originalJs, $addition);
 
-        file_put_contents($this->file, $js);
+        if ($originalJs !== $js) {
+            file_put_contents($this->file, $js);
+        }
     }
 
     private function getCustomJsAdditions()

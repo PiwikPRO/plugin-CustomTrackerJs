@@ -70,19 +70,8 @@ JS;
         $this->assertEquals($expected, file_get_contents($this->file));
 
         // Also test that further updates will not change the file
-        $this->testFileNotUpdatedIfNoChange();
-    }
-
-    public function testFileNotUpdatedIfNoChange()
-    {
-        $originalContent = file_get_contents($this->file);
-        $originalTime = filemtime($this->file);
-
-        $updater = new TrackerUpdater($this->file);
         $updater();
-
-        $this->assertEquals($originalContent, file_get_contents($this->file));
-        $this->assertEquals($originalTime, filemtime($this->file));
+        $this->assertEquals($expected, file_get_contents($this->file));
     }
 
     public function testMultipleEventListeners()
