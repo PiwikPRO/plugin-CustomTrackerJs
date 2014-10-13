@@ -26,7 +26,7 @@ class Settings extends \Piwik\Plugin\Settings
 
     protected function init()
     {
-        $this->setIntroduction('The CustomTrackerJs plugin lets you customize the Javascript code of the tracker.');
+        $this->setIntroduction('The CustomTrackerJs plugin let super users and plugins add custom content to the piwik.js tracker file.');
 
         $this->createJavascriptSetting();
     }
@@ -36,7 +36,7 @@ class Settings extends \Piwik\Plugin\Settings
         $this->code = new SystemSetting('code', 'Javascript code');
         $this->code->readableByCurrentUser = true;
         $this->code->uiControlType = static::CONTROL_TEXTAREA;
-        $this->code->description = 'The Javascript code will be inserted at the end of the Piwik Javascript Tracker.';
+        $this->code->description = 'The Javascript code will be inserted at the end of the Piwik Javascript Tracker (piwik.js).';
         $this->code->defaultValue = '';
 
         $this->addSetting($this->code);
