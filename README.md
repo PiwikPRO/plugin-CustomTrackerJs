@@ -45,4 +45,7 @@ Nothing here yet.
 
 ## Support
 
-Please open a GitHub issue in case you are facing a bug.
+Please open a GitHub issue in case you are facing a bug. 
+
+
+Plugin created and maintained by [Piwik PRO](http://piwik.pro/). 
