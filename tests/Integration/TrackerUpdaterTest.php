@@ -97,4 +97,14 @@ JS;
 
         $this->assertEquals($expected, file_get_contents($this->file));
     }
+
+    /**
+     * @expectedException \InvalidArgumentException
+     * @expectedExceptionMessage The file 'foobar' doesn't exist or is not writable
+     */
+    public function testUnknownFile()
+    {
+        $updater = new TrackerUpdater('foobar');
+        $updater();
+    }
 }

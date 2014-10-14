@@ -8,6 +8,7 @@
 
 namespace Piwik\Plugins\CustomTrackerJs;
 
+use Piwik\Log;
 use Piwik\Plugin;
 
 class CustomTrackerJs extends Plugin
@@ -15,7 +16,12 @@ class CustomTrackerJs extends Plugin
     public function getListHooksRegistered()
     {
         return array(
-            'CustomTrackerJs.getTrackerJsAdditions' => 'getTrackerJsAdditions',
+            'CustomTrackerJs.getTrackerJsAdditions'    => 'getTrackerJsAdditions',
+            // Update the tracker when one of these events is raised
+            'Settings.CustomTrackerJs.settingsUpdated' => 'updateTracker',
+            'CoreUpdater.update.end'                   => 'updateTracker',
+            'PluginManager.pluginDeactivated'          => 'updateTracker',
+            'PluginManager.pluginActivated'            => 'updateTracker',
         );
     }
 
@@ -32,6 +38,16 @@ class CustomTrackerJs extends Plugin
 
         if ($addition) {
             $code .= PHP_EOL . $addition;
+        }
+    }
+
+    public function updateTracker()
+    {
+        try {
+            $trackerUpdater = new TrackerUpdater();
+            $trackerUpdater();
+        } catch (\Exception $e) {
+            Log::error('There was an error while updating the javascript tracker: ' . $e->getMessage());
         }
     }
 }

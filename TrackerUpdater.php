@@ -29,6 +29,10 @@ class TrackerUpdater
 
     public function __invoke()
     {
+        if (! (file_exists($this->file) && is_readable($this->file) && is_writable($this->file))) {
+            throw new \InvalidArgumentException("The file '$this->file' doesn't exist or is not writable");
+        }
+
         $originalJs = file_get_contents($this->file);
         $addition = $this->getCustomJsAdditions();
 
