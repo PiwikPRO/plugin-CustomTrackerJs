@@ -26,7 +26,10 @@ class Settings extends \Piwik\Plugin\Settings
 
     protected function init()
     {
-        $this->setIntroduction('The CustomTrackerJs plugin let super users and plugins add custom content to the piwik.js tracker file.');
+        $this->setIntroduction(
+            'The CustomTrackerJs plugin let super users and plugins add custom content to the piwik.js tracker file.'
+            . ' This plugin is brought to you by Piwik PRO, creators of the Piwik Cloud.'
+        );
 
         $this->createJavascriptSetting();
     }
