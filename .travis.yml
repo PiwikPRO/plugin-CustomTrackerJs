@@ -15,17 +15,19 @@ env:
   global:
     - PLUGIN_NAME=CustomTrackerJs
     - PIWIK_ROOT_DIR=$TRAVIS_BUILD_DIR/piwik
+    - secure: "WFkWYqac1Pj2MJPjG6bdM5D2g5s90IG15HRb/n4EqHLUA7IDsdTybYFtfyivB/gfiIn66FFrWZzpbxXqPKWJ65ycgdpji2Rcz0V+EVHGghXnOIshTW4QVo/daPYSf/xeC6G2FbicZb84DTbQF1efplW4KmBvneJEuLKU+MHYfD0="
+    - secure: "cmHH5qcVmmezcyq5ZCnIqz0RI7EuuDqwnsJ6k9lW3HkoZsN75s8RyXqKDjfFmj3ewd/bCnOXYGBhMHL5+lNOrJYrDYC++oviWGkqUP/5r7nDOJ1H19dd+wpU4dXL+UugpWTLsTLNFvjeO40644bNfw7Y5ggDZLmpZ/dAi0ixK6c="
   matrix:
     - TEST_SUITE=PluginTests MYSQL_ADAPTER=PDO_MYSQL
-    - TEST_SUITE=PluginTests MYSQL_ADAPTER=PDO_MYSQL TEST_AGAINST_CORE=latest_stable
+    - TEST_SUITE=PluginTests MYSQL_ADAPTER=PDO_MYSQL TEST_AGAINST_CORE=minimum_required_piwik
 
 matrix:
   exclude:
     # execute latest stable tests only w/ PHP 5.5
-    - php: 5.3.3
-      env: TEST_SUITE=PluginTests MYSQL_ADAPTER=PDO_MYSQL TEST_AGAINST_CORE=latest_stable
+    - php: 5.3
+      env: TEST_SUITE=PluginTests MYSQL_ADAPTER=PDO_MYSQL TEST_AGAINST_CORE=minimum_required_piwik
     - php: 5.4
-      env: TEST_SUITE=PluginTests MYSQL_ADAPTER=PDO_MYSQL TEST_AGAINST_CORE=latest_stable
+      env: TEST_SUITE=PluginTests MYSQL_ADAPTER=PDO_MYSQL TEST_AGAINST_CORE=minimum_required_piwik
 
 script: $PIWIK_ROOT_DIR/tests/travis/travis.sh
 
@@ -51,10 +53,6 @@ install:
   - rm -rf plugins/$PLUGIN_NAME
   - mv ../$PLUGIN_NAME plugins
 
-  # copy .coveralls.yml if none exists
-  - if [ ! -f ../coveralls.yml ];
-    then cp .coveralls.yml ../coveralls.yml || true;
-    fi
 
   # make sure travis test scripts are always latest (so in older releases/branches, the latest scripts will still be used)
   - git checkout master -q -- ./tests/travis ./plugins/TestRunner || true
@@ -64,11 +62,7 @@ install:
 before_script:
   - ./tests/travis/install_mysql_5.6.sh
 
-  - if ([ -z "$TEST_SUITE" ] || [ -n "$PLUGIN_NAME" ]);
-    then composer require satooshi/php-coveralls dev-master;
-    else
-    phpenv config-rm xdebug.ini;
-    fi
+  - phpenv config-rm xdebug.ini;
 
   # add always_populate_raw_post_data=-1 to php.ini
   - echo "always_populate_raw_post_data=-1" >> ~/.phpenv/versions/$(phpenv version-name)/etc/php.ini
@@ -114,7 +108,7 @@ before_script:
   - ./tests/travis/prepare.sh
   - ./tests/travis/setup_webserver.sh
 
-  - export GENERATE_TRAVIS_YML_COMMAND="php ./console generate:travis-yml --plugin=\"CustomTrackerJs\" --verbose"
+  - export GENERATE_TRAVIS_YML_COMMAND="php ./console generate:travis-yml --plugin=\"CustomTrackerJs\""
   - ./tests/travis/autoupdate_travis_yml.sh
 
   - cd tests/PHPUnit
@@ -122,10 +116,6 @@ before_script:
 after_script:
   # change directory back to root travis dir
   - cd $PIWIK_ROOT_DIR
-
-  - if ([ -z "$TEST_SUITE" ] || [ -n "$PLUGIN_NAME" ]);
-    then php vendor/bin/coveralls -v;
-    fi
 
   # output contents of files w/ debugging info to screen
   - cat /var/log/nginx/error.log
