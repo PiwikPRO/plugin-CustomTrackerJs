@@ -31,9 +31,6 @@ class TrackerUpdaterTest extends IntegrationTestCase
         $this->file = __DIR__ . '/Fixture/tmp.js';
         $this->eventDispatcher = EventDispatcher::getInstance();
 
-        // Make sure nobody is listening as it will mess up the tests results
-        $this->eventDispatcher->clearObservers('CustomTrackerJs.getTrackerJsAdditions');
-
         // Prepare a file that we can manipulate for the tests
         if (file_exists($this->file)) {
             unlink($this->file);
@@ -43,8 +40,6 @@ class TrackerUpdaterTest extends IntegrationTestCase
 
     public function tearDown()
     {
-        $this->eventDispatcher->clearObservers('CustomTrackerJs.getTrackerJsAdditions');
-
         if (file_exists($this->file)) {
             unlink($this->file);
         }
