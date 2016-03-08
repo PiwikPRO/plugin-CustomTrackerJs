@@ -41,11 +41,12 @@ class MyPlugin extends \Piwik\Plugin
 
 ## Changelog
 
-Nothing here yet.
+* 1.1.0
+    - PPCDEV-2609 Compatibility with Piwik 2.16.0
 
 ## Support
 
-Please open a GitHub issue in case you are facing a bug. 
+Please contact us at contact@piwik.pro in case you are facing a bug.
 
 
-Plugin created and maintained by [Piwik PRO](http://piwik.pro/). 
+Plugin created and maintained by [Piwik PRO](http://piwik.pro/).
