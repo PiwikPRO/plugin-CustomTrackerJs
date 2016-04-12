@@ -41,7 +41,7 @@ class MyPlugin extends \Piwik\Plugin
 
 ## Changelog
 
-* 1.1.1
+* 1.1.2
     - Marketplace release
 * 1.1.0
     - PPCDEV-2609 Compatibility with Piwik 2.16.0
