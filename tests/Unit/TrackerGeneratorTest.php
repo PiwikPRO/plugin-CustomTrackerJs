@@ -8,6 +8,7 @@
 
 namespace Piwik\Plugins\CustomTrackerJs\tests\Unit;
 
+use Piwik\Plugins\CustomTrackerJs\Additions\Addition;
 use Piwik\Plugins\CustomTrackerJs\TrackerGenerator;
 
 /**
@@ -22,15 +23,18 @@ class TrackerGeneratorTest extends \PHPUnit_Framework_TestCase
 // This is some JS
 JS;
         $expected = <<<JS
-// This is some JS
 
 /* GENERATED: plugin additions */
-// Foo
+// Foo top
 /* END GENERATED: plugin additions */
-JS;
+// This is some JS
+/* GENERATED: plugin additions */
+// Foo bottom
+/* END GENERATED: plugin additions */
 
+JS;
         $generator = new TrackerGenerator();
-        $this->assertEquals($expected, $generator->generate($code, '// Foo'));
+        $this->assertEquals($expected, $generator->generate($code, new Addition('// Foo top', '// Foo bottom')));
     }
 
     public function testEmptyAdditionShouldDoNothing()
@@ -43,54 +47,65 @@ JS;
 JS;
 
         $generator = new TrackerGenerator();
-        $this->assertEquals($expected, $generator->generate($code, ''));
+        $this->assertEquals($expected, $generator->generate($code, new Addition('', '')));
     }
 
     public function testOverwrite()
     {
         $code = <<<JS
-// This is some JS
 
 /* GENERATED: plugin additions */
-// Foo
+// Foo top
 /* END GENERATED: plugin additions */
+// This is some JS
+/* GENERATED: plugin additions */
+// Foo bottom
+/* END GENERATED: plugin additions */
+
 JS;
         $expected = <<<JS
-// This is some JS
 
 /* GENERATED: plugin additions */
-// Bar
+// Bar top
 /* END GENERATED: plugin additions */
+// This is some JS
+/* GENERATED: plugin additions */
+// Bar bottom
+/* END GENERATED: plugin additions */
+
 JS;
 
         $generator = new TrackerGenerator();
-        $this->assertEquals($expected, $generator->generate($code, '// Bar'));
+        $this->assertEquals($expected, $generator->generate($code, new Addition('// Bar top', '// Bar bottom')));
     }
 
     public function testHandleMultipleBlocks()
     {
         $code = <<<JS
 // This is some JS
+
 /* GENERATED: plugin additions */
 // Foo
 /* END GENERATED: plugin additions */
-// This line should not be removed
+
 
 /* GENERATED: plugin additions */
 // Bar
 /* END GENERATED: plugin additions */
+
 JS;
         $expected = <<<JS
-// This is some JS
-
-// This line should not be removed
 
 /* GENERATED: plugin additions */
-// Hello
+// Hello top
 /* END GENERATED: plugin additions */
-JS;
+// This is some JS
+/* GENERATED: plugin additions */
+// Hello bottom
+/* END GENERATED: plugin additions */
 
+JS;
         $generator = new TrackerGenerator();
-        $this->assertEquals($expected, $generator->generate($code, '// Hello'));
+        $this->assertEquals($expected, $generator->generate($code, new Addition('// Hello top', '// Hello bottom')));
     }
 }

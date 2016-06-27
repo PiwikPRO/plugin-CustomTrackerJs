@@ -8,6 +8,8 @@
 
 namespace Piwik\Plugins\CustomTrackerJs;
 
+use Piwik\Plugins\CustomTrackerJs\Additions\Addition;
+
 /**
  * Generates the Javascript tracker.
  */
@@ -15,11 +17,11 @@ class TrackerGenerator
 {
     /**
      * @param string $currentJS Current Javascript tracker code.
-     * @param string $addition  Code to add to the tracker.
+     * @param Addition $addition  Code to add to the tracker.
      *
      * @return string The new JS tracker code.
      */
-    public function generate($currentJS, $addition)
+    public function generate($currentJS, Addition $addition)
     {
         $result = $this->removeExistingCodeAddition($currentJS);
 
@@ -28,7 +30,7 @@ class TrackerGenerator
 
     private function removeExistingCodeAddition($result)
     {
-        $pattern = '#\/\* GENERATED: plugin additions \*\/(.*)\/\* END GENERATED: plugin additions \*\/#sU';
+        $pattern = '#\n\/\* GENERATED: plugin additions \*\/\n(.*)\n\/\* END GENERATED: plugin additions \*\/\n#sU';
 
         $result = preg_replace($pattern, '', $result);
 
@@ -36,20 +38,19 @@ class TrackerGenerator
         return $result;
     }
 
-    private function appendAddition($code, $addition)
+    private function appendAddition($code, Addition $addition)
     {
-        if ($addition == '') {
-            return $code;
+        return $this->getSignature($addition->getTopCode()) .
+               $code .
+               $this->getSignature($addition->getBottomCode());
+    }
+
+    private function getSignature($content)
+    {
+        if ($content === '') {
+            return $content;
         }
 
-        $code .= <<<STR
-
-
-/* GENERATED: plugin additions */
-$addition
-/* END GENERATED: plugin additions */
-STR;
-
-        return $code;
+        return sprintf("\n/* GENERATED: plugin additions */\n%s\n/* END GENERATED: plugin additions */\n", $content);
     }
 }

@@ -9,6 +9,7 @@
 namespace Piwik\Plugins\CustomTrackerJs;
 
 use Piwik\Piwik;
+use Piwik\Plugins\CustomTrackerJs\Additions\AdditionFactory;
 
 /**
  * Updates the Javascript file containing the Tracker.
@@ -46,15 +47,6 @@ class TrackerUpdater
 
     private function getCustomJsAdditions()
     {
-        $code = '';
-
-        /**
-         * This event lets plugins add custom Javascript to the Tracker.
-         *
-         * @param string $code The Javascript code to add to the original tracker.
-         */
-        Piwik::postEvent('CustomTrackerJs.getTrackerJsAdditions', array(&$code));
-
-        return $code;
+        return AdditionFactory::createFromEvent();
     }
 }

@@ -16,7 +16,7 @@ class CustomTrackerJs extends Plugin
     public function getListHooksRegistered()
     {
         return array(
-            'CustomTrackerJs.getTrackerJsAdditions'    => 'getTrackerJsAdditions',
+            'CustomTrackerJs.getTrackerJsAdditionsBottom'    => 'getTrackerJsAdditions',
             // Update the tracker when one of these events is raised
             'Settings.CustomTrackerJs.settingsUpdated' => 'updateTracker',
             'CoreUpdater.update.end'                   => 'updateTracker',
@@ -37,7 +37,7 @@ class CustomTrackerJs extends Plugin
         $addition = $settings->code->getValue();
 
         if ($addition) {
-            $code .= PHP_EOL . $addition;
+            $code .= $addition;
         }
     }
 

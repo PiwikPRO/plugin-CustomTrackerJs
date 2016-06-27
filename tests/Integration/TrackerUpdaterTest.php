@@ -47,19 +47,27 @@ class TrackerUpdaterTest extends IntegrationTestCase
 
     public function testUpdateTracker()
     {
-        $this->eventDispatcher->addObserver('CustomTrackerJs.getTrackerJsAdditions', function (&$code) {
+        $this->eventDispatcher->addObserver('CustomTrackerJs.getTrackerJsAdditionsTop', function (&$code) {
             $code .= 'var foo;';
+        });
+
+        $this->eventDispatcher->addObserver('CustomTrackerJs.getTrackerJsAdditionsBottom', function (&$code) {
+            $code .= 'var bar;';
         });
 
         $updater = new TrackerUpdater($this->file);
         $updater();
 
         $expected = <<<JS
-// Hello world
 
 /* GENERATED: plugin additions */
 var foo;
 /* END GENERATED: plugin additions */
+// Hello world
+/* GENERATED: plugin additions */
+var bar;
+/* END GENERATED: plugin additions */
+
 JS;
 
         $this->assertEquals($expected, file_get_contents($this->file));
@@ -71,10 +79,10 @@ JS;
 
     public function testMultipleEventListeners()
     {
-        $this->eventDispatcher->addObserver('CustomTrackerJs.getTrackerJsAdditions', function (&$code) {
+        $this->eventDispatcher->addObserver('CustomTrackerJs.getTrackerJsAdditionsBottom', function (&$code) {
             $code .= 'var foo;';
         });
-        $this->eventDispatcher->addObserver('CustomTrackerJs.getTrackerJsAdditions', function (&$code) {
+        $this->eventDispatcher->addObserver('CustomTrackerJs.getTrackerJsAdditionsBottom', function (&$code) {
             $code .= PHP_EOL . 'var bar;';
         });
 
@@ -83,11 +91,11 @@ JS;
 
         $expected = <<<JS
 // Hello world
-
 /* GENERATED: plugin additions */
 var foo;
 var bar;
 /* END GENERATED: plugin additions */
+
 JS;
 
         $this->assertEquals($expected, file_get_contents($this->file));
