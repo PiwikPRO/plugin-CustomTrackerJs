@@ -11,6 +11,7 @@ namespace Piwik\Plugins\CustomTrackerJs\tests\Integration;
 use Piwik\EventDispatcher;
 use Piwik\Plugins\CustomTrackerJs\TrackerUpdater;
 use Piwik\Tests\Framework\TestCase\IntegrationTestCase;
+use Piwik\Plugins\CustomTrackerJs\Additions\Extension;
 
 /**
  * @group CustomTrackerJs
@@ -47,13 +48,11 @@ class TrackerUpdaterTest extends IntegrationTestCase
 
     public function testUpdateTracker()
     {
-        $this->eventDispatcher->addObserver('CustomTrackerJs.getTrackerJsAdditionsTop', function (&$code) {
-            $code .= 'var foo;';
+        $this->eventDispatcher->addObserver('CustomTrackerJs.getTrackerJsExtension', function (Extension $extension) {
+            $extension->setTopCode('var foo;');
+            $extension->setBottomCode('var foo;');
         });
 
-        $this->eventDispatcher->addObserver('CustomTrackerJs.getTrackerJsAdditionsBottom', function (&$code) {
-            $code .= 'var bar;';
-        });
 
         $updater = new TrackerUpdater($this->file);
         $updater();
@@ -65,7 +64,7 @@ var foo;
 /* END GENERATED: plugin additions */
 // Hello world
 /* GENERATED: plugin additions */
-var bar;
+var foo;
 /* END GENERATED: plugin additions */
 
 JS;
@@ -79,31 +78,31 @@ JS;
 
     public function testMultipleEventListeners()
     {
-        $this->eventDispatcher->addObserver('CustomTrackerJs.getTrackerJsAdditionsBottom', function (&$code) {
-            $code .= 'var foo;';
-        });
-        $this->eventDispatcher->addObserver('CustomTrackerJs.getTrackerJsAdditionsBottom', function (&$code) {
-            $code .= PHP_EOL . 'var bar;';
+        $this->eventDispatcher->addObserver('CustomTrackerJs.getTrackerJsExtension', function (Extension $extension) {
+            $extension->setTopCode('var foo;');
+            $extension->setBottomCode('var foo;');
         });
 
         $updater = new TrackerUpdater($this->file);
         $updater();
 
         $expected = <<<JS
+
+/* GENERATED: plugin additions */
+var foo;
+/* END GENERATED: plugin additions */
 // Hello world
 /* GENERATED: plugin additions */
 var foo;
-var bar;
 /* END GENERATED: plugin additions */
 
 JS;
-
         $this->assertEquals($expected, file_get_contents($this->file));
     }
 
     /**
-     * @expectedException \InvalidArgumentException
-     * @expectedExceptionMessage The file 'foobar' doesn't exist or is not writable
+     * @expectedException Piwik\Plugins\CustomTrackerJs\Exception\AccessDeniedException
+     * @expectedExceptionMessage You have no access to piwik.js file
      */
     public function testUnknownFile()
     {

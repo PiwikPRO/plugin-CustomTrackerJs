@@ -8,8 +8,7 @@
 
 namespace Piwik\Plugins\CustomTrackerJs;
 
-use Piwik\Piwik;
-use Piwik\Plugins\CustomTrackerJs\Additions\AdditionFactory;
+use Piwik\Plugins\CustomTrackerJs\Additions\ExtensionFactory;
 
 /**
  * Updates the Javascript file containing the Tracker.
@@ -30,23 +29,8 @@ class TrackerUpdater
 
     public function __invoke()
     {
-        if (! (file_exists($this->file) && is_readable($this->file) && is_writable($this->file))) {
-            throw new \InvalidArgumentException("The file '$this->file' doesn't exist or is not writable");
-        }
-
-        $originalJs = file_get_contents($this->file);
-        $addition = $this->getCustomJsAdditions();
-
-        $generator = new TrackerGenerator();
-        $js = $generator->generate($originalJs, $addition);
-
-        if ($originalJs !== $js) {
-            file_put_contents($this->file, $js);
-        }
-    }
-
-    private function getCustomJsAdditions()
-    {
-        return AdditionFactory::createFromEvent();
+        $trackingCode = new TrackingCodeFile($this->file);
+        $trackingCode->addExtension(ExtensionFactory::createFromEvent());
+        $trackingCode->save();
     }
 }

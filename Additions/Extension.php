@@ -10,7 +10,7 @@
 
 namespace Piwik\Plugins\CustomTrackerJs\Additions;
 
-class Addition
+class Extension
 {
     /**
      * @var string
@@ -26,7 +26,7 @@ class Addition
      * @param string $topCode
      * @param string $bottomCode
      */
-    public function __construct($topCode, $bottomCode)
+    public function __construct($topCode = '', $bottomCode = '')
     {
         $this->topCode = $topCode;
         $this->bottomCode = $bottomCode;

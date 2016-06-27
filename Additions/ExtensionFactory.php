@@ -12,19 +12,25 @@ namespace Piwik\Plugins\CustomTrackerJs\Additions;
 
 use Piwik\Piwik;
 
-class AdditionFactory
+class ExtensionFactory
 {
+    /**
+     * @return Extension
+     */
     public static function createFromEvent()
     {
-        $topCode = '';
+        $extension = new Extension();
+
+        Piwik::postEvent('CustomTrackerJs.getTrackerJsExtension', [$extension]);
+
         $bottomCode = '';
-
-        Piwik::postEvent('CustomTrackerJs.getTrackerJsAdditionsTop', [&$topCode]);
-        Piwik::postEvent('CustomTrackerJs.getTrackerJsAdditionsBottom', [&$bottomCode]);
-
         /** @deprecated */
         Piwik::postEvent('CustomTrackerJs.getTrackerJsAdditions', [&$bottomCode]);
 
-        return new Addition($topCode, $bottomCode);
+        if ($bottomCode != '') {
+            $extension->setBottomCode($bottomCode);
+        }
+
+        return $extension;
     }
 }

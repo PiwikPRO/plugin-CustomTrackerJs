@@ -56,6 +56,10 @@ class TrackerUpdaterBcBreakTest extends IntegrationTestCase
         $updater();
 
         $expected = <<<JS
+
+/* GENERATED: plugin additions */
+
+/* END GENERATED: plugin additions */
 // Hello world
 /* GENERATED: plugin additions */
 var foo;
@@ -83,6 +87,10 @@ JS;
         $updater();
 
         $expected = <<<JS
+
+/* GENERATED: plugin additions */
+
+/* END GENERATED: plugin additions */
 // Hello world
 /* GENERATED: plugin additions */
 var foo;
@@ -95,8 +103,8 @@ JS;
     }
 
     /**
-     * @expectedException \InvalidArgumentException
-     * @expectedExceptionMessage The file 'foobar' doesn't exist or is not writable
+     * @expectedException Piwik\Plugins\CustomTrackerJs\Exception\AccessDeniedException
+     * @expectedExceptionMessage You have no access to piwik.js file
      */
     public function testUnknownFile()
     {
