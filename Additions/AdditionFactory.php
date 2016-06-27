@@ -22,6 +22,9 @@ class AdditionFactory
         Piwik::postEvent('CustomTrackerJs.getTrackerJsAdditionsTop', [&$topCode]);
         Piwik::postEvent('CustomTrackerJs.getTrackerJsAdditionsBottom', [&$bottomCode]);
 
+        /** @deprecated */
+        Piwik::postEvent('CustomTrackerJs.getTrackerJsAdditions', [&$bottomCode]);
+
         return new Addition($topCode, $bottomCode);
     }
 }

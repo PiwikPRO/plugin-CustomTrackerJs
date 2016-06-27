@@ -17,6 +17,7 @@ class CustomTrackerJs extends Plugin
     {
         return array(
             'CustomTrackerJs.getTrackerJsAdditionsBottom'    => 'getTrackerJsAdditions',
+            'CustomTrackerJs.getTrackerJsAdditions'    => 'getTrackerJsAdditions',
             // Update the tracker when one of these events is raised
             'Settings.CustomTrackerJs.settingsUpdated' => 'updateTracker',
             'CoreUpdater.update.end'                   => 'updateTracker',

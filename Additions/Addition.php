@@ -12,10 +12,20 @@ namespace Piwik\Plugins\CustomTrackerJs\Additions;
 
 class Addition
 {
+    /**
+     * @var string
+     */
     private $topCode;
 
+    /**
+     * @var string
+     */
     private $bottomCode;
 
+    /**
+     * @param string $topCode
+     * @param string $bottomCode
+     */
     public function __construct($topCode, $bottomCode)
     {
         $this->topCode = $topCode;
@@ -23,7 +33,7 @@ class Addition
     }
 
     /**
-     * @return mixed
+     * @return string
      */
     public function getBottomCode()
     {
@@ -31,7 +41,7 @@ class Addition
     }
 
     /**
-     * @param mixed $bottomCode
+     * @param string $bottomCode
      */
     public function setBottomCode($bottomCode)
     {
@@ -39,7 +49,7 @@ class Addition
     }
 
     /**
-     * @return mixed
+     * @return string
      */
     public function getTopCode()
     {
@@ -47,12 +57,10 @@ class Addition
     }
 
     /**
-     * @param mixed $topCode
+     * @param string $topCode
      */
     public function setTopCode($topCode)
     {
         $this->topCode = $topCode;
     }
-
-
 }
