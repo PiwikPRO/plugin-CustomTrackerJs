@@ -10,7 +10,8 @@ namespace Piwik\Plugins\CustomTrackerJs;
 
 use Piwik\Log;
 use Piwik\Plugin;
-use Piwik\Plugins\CustomTrackerJs\Additions\Extension;
+use Piwik\Plugins\CustomTrackerJs\TrackingCode\Extension;
+use Piwik\Plugins\CustomTrackerJs\TrackingCode\ExtensionCollection;
 
 class CustomTrackerJs extends Plugin
 {
@@ -29,16 +30,19 @@ class CustomTrackerJs extends Plugin
     /**
      * Add the custom Javascript that is configured in the admin panel to the JS Tracker.
      *
-     * @param Extension $extension
+     * @param ExtensionCollection $extensionCollection
      */
-    public function getTrackerJsAdditions(Extension $extension)
+    public function getTrackerJsAdditions(ExtensionCollection $extensionCollection)
     {
         $settings = new Settings('CustomTrackerJs');
 
         $addition = $settings->code->getValue();
 
         if ($addition) {
-            $extension->setBottomCode($addition);
+            $extension = new Extension('customTrackerJs');
+            $extension->setCode($addition);
+
+            $extensionCollection->add($extension);
         }
     }
 

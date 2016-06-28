@@ -8,29 +8,32 @@
  * @link http://piwik.pro
  */
 
-namespace Piwik\Plugins\CustomTrackerJs\Additions;
+namespace Piwik\Plugins\CustomTrackerJs\TrackingCode;
 
 use Piwik\Piwik;
 
-class ExtensionFactory
+class ExtensionCollectionFactory
 {
     /**
-     * @return Extension
+     * @return ExtensionCollection
      */
     public static function createFromEvent()
     {
-        $extension = new Extension();
+        $extensionCollection = new ExtensionCollection();
 
-        Piwik::postEvent('CustomTrackerJs.getTrackerJsExtension', [$extension]);
+        Piwik::postEvent('CustomTrackerJs.getTrackerJsExtension', [$extensionCollection]);
 
         $bottomCode = '';
         /** @deprecated */
         Piwik::postEvent('CustomTrackerJs.getTrackerJsAdditions', [&$bottomCode]);
 
         if ($bottomCode != '') {
-            $extension->setBottomCode($bottomCode);
+            $extension = new Extension('plugin additions');
+            $extension->setCode($bottomCode);
+
+            $extensionCollection->add($extension);
         }
 
-        return $extension;
+        return $extensionCollection;
     }
 }

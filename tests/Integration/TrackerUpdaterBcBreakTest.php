@@ -56,14 +56,11 @@ class TrackerUpdaterBcBreakTest extends IntegrationTestCase
         $updater();
 
         $expected = <<<JS
-
-/* GENERATED: plugin additions */
-
-/* END GENERATED: plugin additions */
 // Hello world
 /* GENERATED: plugin additions */
 var foo;
 /* END GENERATED: plugin additions */
+
 
 JS;
 
@@ -87,15 +84,12 @@ JS;
         $updater();
 
         $expected = <<<JS
-
-/* GENERATED: plugin additions */
-
-/* END GENERATED: plugin additions */
 // Hello world
 /* GENERATED: plugin additions */
 var foo;
 var bar;
 /* END GENERATED: plugin additions */
+
 
 JS;
 

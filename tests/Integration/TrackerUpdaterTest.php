@@ -10,8 +10,9 @@ namespace Piwik\Plugins\CustomTrackerJs\tests\Integration;
 
 use Piwik\EventDispatcher;
 use Piwik\Plugins\CustomTrackerJs\TrackerUpdater;
+use Piwik\Plugins\CustomTrackerJs\TrackingCode\ExtensionCollection;
 use Piwik\Tests\Framework\TestCase\IntegrationTestCase;
-use Piwik\Plugins\CustomTrackerJs\Additions\Extension;
+use Piwik\Plugins\CustomTrackerJs\TrackingCode\Extension;
 
 /**
  * @group CustomTrackerJs
@@ -20,10 +21,16 @@ use Piwik\Plugins\CustomTrackerJs\Additions\Extension;
 class TrackerUpdaterTest extends IntegrationTestCase
 {
     private $file = '/Fixture/tmp.js';
+
     /**
      * @var EventDispatcher
      */
     private $eventDispatcher;
+
+    /**
+     * @var TrackerUpdater
+     */
+    private $updater;
 
     public function setUp()
     {
@@ -48,56 +55,20 @@ class TrackerUpdaterTest extends IntegrationTestCase
 
     public function testUpdateTracker()
     {
-        $this->eventDispatcher->addObserver('CustomTrackerJs.getTrackerJsExtension', function (Extension $extension) {
-            $extension->setTopCode('var foo;');
-            $extension->setBottomCode('var foo;');
-        });
-
-
-        $updater = new TrackerUpdater($this->file);
-        $updater();
-
-        $expected = <<<JS
-
-/* GENERATED: plugin additions */
-var foo;
-/* END GENERATED: plugin additions */
-// Hello world
-/* GENERATED: plugin additions */
-var foo;
-/* END GENERATED: plugin additions */
-
-JS;
-
-        $this->assertEquals($expected, file_get_contents($this->file));
-
-        // Also test that further updates will not change the file
-        $updater();
-        $this->assertEquals($expected, file_get_contents($this->file));
+        $this->iAddedExtensionWithTopAndBottom();
+        $this->trackingCodeWasUpdated();
+        $this->theTrackingCodeShouldHasNewLines();
+        $this->theTrackingCodeWasUpdatedAgain();
+        $this->theTrackingCodeWasNoChanged();
     }
 
     public function testMultipleEventListeners()
     {
-        $this->eventDispatcher->addObserver('CustomTrackerJs.getTrackerJsExtension', function (Extension $extension) {
-            $extension->setTopCode('var foo;');
-            $extension->setBottomCode('var foo;');
-        });
-
-        $updater = new TrackerUpdater($this->file);
-        $updater();
-
-        $expected = <<<JS
-
-/* GENERATED: plugin additions */
-var foo;
-/* END GENERATED: plugin additions */
-// Hello world
-/* GENERATED: plugin additions */
-var foo;
-/* END GENERATED: plugin additions */
-
-JS;
-        $this->assertEquals($expected, file_get_contents($this->file));
+        $this->iAddedExtensionWithTopAndBottom();
+        $this->iAddedAnotherExtensionWithTopAndBottom();
+        $this->iRemovedTheLastExtension();
+        $this->trackingCodeWasUpdated();
+        $this->theTrackingCodeShouldHasNewLines();
     }
 
     /**
@@ -105,6 +76,90 @@ JS;
      * @expectedExceptionMessage You have no access to piwik.js file
      */
     public function testUnknownFile()
+    {
+        $this->iAmTryingToUpdateNonExistentFile();
+    }
+
+    private function iAddedExtensionWithTopAndBottom()
+    {
+        $this->addExtensionWithNameAndCode("test", "foo");
+    }
+
+    private function iAddedAnotherExtensionWithTopAndBottom()
+    {
+        $this->addExtensionWithNameAndCode("test2", "bar");
+    }
+
+    private function iRemovedTheLastExtension()
+    {
+        $this->eventDispatcher->addObserver(
+            'CustomTrackerJs.getTrackerJsExtension',
+            function (ExtensionCollection $extensionCollection) {
+                $extensionCollection->removeByName('test2');
+            }
+        );
+    }
+
+    /**
+     * @param string $name
+     * @param string $code
+     */
+    private function addExtensionWithNameAndCode($name, $code)
+    {
+        $this->eventDispatcher->addObserver(
+            'CustomTrackerJs.getTrackerJsExtension',
+            function (ExtensionCollection $extensionCollection) use ($name, $code) {
+                $code = sprintf('var %s;', $code);
+
+                $extension = new Extension($name);
+                $extension->setCode($code);
+
+                $extensionCollection->add($extension);
+
+                $extension = new Extension($name, Extension::POSITION_TOP);
+                $extension->setCode($code);
+
+                $extensionCollection->add($extension);
+            }
+        );
+    }
+
+    private function trackingCodeWasUpdated()
+    {
+        $this->updater = new TrackerUpdater($this->file);
+        $this->updater->__invoke();
+    }
+
+    private function theTrackingCodeShouldHasNewLines()
+    {
+        $expected = <<<JS
+
+/* GENERATED: test */
+var foo;
+/* END GENERATED: test */
+
+// Hello world
+/* GENERATED: test */
+var foo;
+/* END GENERATED: test */
+
+
+JS;
+
+        $this->assertEquals($expected, file_get_contents($this->file));
+    }
+
+    private function theTrackingCodeWasUpdatedAgain()
+    {
+        $this->updater->__invoke();
+    }
+
+    private function theTrackingCodeWasNoChanged()
+    {
+        $this->theTrackingCodeShouldHasNewLines();
+    }
+
+    private function iAmTryingToUpdateNonExistentFile()
     {
         $updater = new TrackerUpdater('foobar');
         $updater();

@@ -10,8 +10,9 @@
 
 namespace Piwik\Plugins\CustomTrackerJs;
 
-use Piwik\Plugins\CustomTrackerJs\Additions\Extension;
 use Piwik\Plugins\CustomTrackerJs\Exception\AccessDeniedException;
+use Piwik\Plugins\CustomTrackerJs\TrackingCode\Extension;
+use Piwik\Plugins\CustomTrackerJs\TrackingCode\ExtensionCollection;
 
 class TrackingCodeFile
 {
@@ -25,18 +26,14 @@ class TrackingCodeFile
      */
     private $copyFile;
 
-    /** @var Extension */
-    private $extension;
+    /** @var ExtensionCollection */
+    private $extensionCollection;
 
-    public function __construct($originalFile)
+    public function __construct($originalFile, ExtensionCollection $extensionCollection)
     {
         $this->originalFile = $originalFile;
         $this->copyFile = $originalFile . '._ct_bck';
-    }
-
-    public function addExtension(Extension $extension)
-    {
-        $this->extension = $extension;
+        $this->extensionCollection = $extensionCollection;
     }
 
     public function save()
@@ -49,7 +46,30 @@ class TrackingCodeFile
             $this->createCopyOfTrackerFile();
         }
 
-        file_put_contents($this->originalFile, $this->getContentByExtension());
+        file_put_contents($this->originalFile, $this->getContent());
+    }
+
+    private function getContent()
+    {
+        $contentTop = '';
+        $contentBottom = '';
+
+        foreach ($this->extensionCollection->asArray() as $extension) {
+
+            $content = $this->getSignatureWithContent($extension->getName(), $extension->getCode()) . PHP_EOL;
+
+            switch ($extension->getPosition()) {
+                case Extension::POSITION_TOP:
+                    $contentTop .= $content;
+                    break;
+                case Extension::POSITION_BOTTOM:
+                    $contentBottom .= $content;
+                    break;
+
+            }
+        }
+
+        return $contentTop . file_get_contents($this->copyFile) . $contentBottom;
     }
 
     /**
@@ -61,24 +81,17 @@ class TrackingCodeFile
     }
 
     /**
-     * @return string
-     */
-    private function getContentByExtension()
-    {
-        return $this->getSignatureWithContent($this->extension->getTopCode()) .
-               file_get_contents($this->copyFile) .
-               $this->getSignatureWithContent($this->extension->getBottomCode());
-    }
-
-    /**
+     * @param string $name
      * @param string $content
      * @return string
      */
-    private function getSignatureWithContent($content)
+    private function getSignatureWithContent($name, $content)
     {
         return sprintf(
-            "\n/* GENERATED: plugin additions */\n%s\n/* END GENERATED: plugin additions */\n",
-            $content
+            "\n/* GENERATED: %s */\n%s\n/* END GENERATED: %s */\n",
+            $name,
+            $content,
+            $name
         );
     }
 

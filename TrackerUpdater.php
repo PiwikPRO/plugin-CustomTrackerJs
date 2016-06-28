@@ -8,7 +8,7 @@
 
 namespace Piwik\Plugins\CustomTrackerJs;
 
-use Piwik\Plugins\CustomTrackerJs\Additions\ExtensionFactory;
+use Piwik\Plugins\CustomTrackerJs\TrackingCode\ExtensionCollectionFactory;
 
 /**
  * Updates the Javascript file containing the Tracker.
@@ -29,8 +29,7 @@ class TrackerUpdater
 
     public function __invoke()
     {
-        $trackingCode = new TrackingCodeFile($this->file);
-        $trackingCode->addExtension(ExtensionFactory::createFromEvent());
+        $trackingCode = new TrackingCodeFile($this->file, ExtensionCollectionFactory::createFromEvent());
         $trackingCode->save();
     }
 }
