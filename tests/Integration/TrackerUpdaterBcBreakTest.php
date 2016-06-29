@@ -20,6 +20,7 @@ use Piwik\Tests\Framework\TestCase\IntegrationTestCase;
 class TrackerUpdaterBcBreakTest extends IntegrationTestCase
 {
     private $file = '/Fixture/tmp.js';
+
     /**
      * @var EventDispatcher
      */
