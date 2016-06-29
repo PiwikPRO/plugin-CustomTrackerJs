@@ -41,6 +41,9 @@ class MyPlugin extends \Piwik\Plugin
 
 ## Changelog
 
+
+* 1.2.0
+    - PPCDEV-4340 add possibility to add code at the top of the piwik.js
 * 1.1.2
     - Marketplace release
 * 1.1.0
