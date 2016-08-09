@@ -42,6 +42,8 @@ class MyPlugin extends \Piwik\Plugin
 ## Changelog
 
 
+* 1.2.1
+    - Added possibility to run update command without database connection
 * 1.2.0
     - PPCDEV-4340 add possibility to add code at the top of the piwik.js
 * 1.1.2
