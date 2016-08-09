@@ -8,6 +8,7 @@
 
 namespace Piwik\Plugins\CustomTrackerJs;
 
+use Piwik\Db;
 use Piwik\Log;
 use Piwik\Plugin;
 use Piwik\Plugins\CustomTrackerJs\TrackingCode\Extension;
@@ -34,9 +35,7 @@ class CustomTrackerJs extends Plugin
      */
     public function getTrackerJsAdditions(ExtensionCollection $extensionCollection)
     {
-        $settings = new Settings('CustomTrackerJs');
-
-        $addition = $settings->code->getValue();
+        $addition = $this->loadAdditionFromSettings();
 
         if ($addition) {
             $extension = new Extension('customTrackerJs');
@@ -54,5 +53,17 @@ class CustomTrackerJs extends Plugin
         } catch (\Exception $e) {
             Log::error('There was an error while updating the javascript tracker: ' . $e->getMessage());
         }
+    }
+
+    /**
+     * @return string
+     */
+    private function loadAdditionFromSettings()
+    {
+        if (Db::hasDatabaseObject()) {
+            return (new Settings('CustomTrackerJs'))->code->getValue();
+        }
+
+        return '';
     }
 }
