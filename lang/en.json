@@ -1,0 +1,7 @@
+{
+  "CustomTrackerJs": {
+    "Setting_title_code": "Javascript code",
+    "Setting_desc_code": "The Javascript code will be inserted at the end of the Piwik Javascript Tracker (piwik.js).",
+    "Setting_introduction_code": "The CustomTrackerJs plugin let super users and plugins add custom content to the piwik.js tracker file. This plugin is brought to you by Piwik PRO, creators of the Piwik Cloud."
+  }
+}

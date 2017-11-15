@@ -8,7 +8,6 @@
 
 namespace Piwik\Plugins\CustomTrackerJs;
 
-use Piwik\Db;
 use Piwik\Log;
 use Piwik\Plugin;
 use Piwik\Plugins\CustomTrackerJs\TrackingCode\Extension;
@@ -16,16 +15,16 @@ use Piwik\Plugins\CustomTrackerJs\TrackingCode\ExtensionCollection;
 
 class CustomTrackerJs extends Plugin
 {
-    public function getListHooksRegistered()
+    public function registerEvents()
     {
-        return array(
+        return [
             'CustomTrackerJs.getTrackerJsExtension'    => 'getTrackerJsAdditions',
             // Update the tracker when one of these events is raised
-            'Settings.CustomTrackerJs.settingsUpdated' => 'updateTracker',
+            'SystemSettings.updated'                   => 'systemSettingsUpdate',
             'CoreUpdater.update.end'                   => 'updateTracker',
             'PluginManager.pluginDeactivated'          => 'updateTracker',
             'PluginManager.pluginActivated'            => 'updateTracker',
-        );
+        ];
     }
 
     /**
@@ -60,10 +59,14 @@ class CustomTrackerJs extends Plugin
      */
     private function loadAdditionFromSettings()
     {
-        if (Db::hasDatabaseObject()) {
-            return (new Settings('CustomTrackerJs'))->code->getValue();
-        }
+        $settings = new SystemSettings();
+        return $settings->customCode->getValue();
+    }
 
-        return '';
+    public function systemSettingsUpdate(\Piwik\Settings\Plugin\SystemSettings $settings)
+    {
+        if ($settings->getPluginName() === 'CustomTrackerJs') {
+            $this->updateTracker();
+        }
     }
 }
