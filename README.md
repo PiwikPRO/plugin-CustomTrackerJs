@@ -41,7 +41,8 @@ class MyPlugin extends \Piwik\Plugin
 
 ## Changelog
 
-
+* 2.0.0
+    - Compatibility with Piwik 3.x
 * 1.2.1
     - Added possibility to run update command without database connection
 * 1.2.0
